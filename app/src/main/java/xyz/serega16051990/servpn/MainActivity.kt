@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val prefs = getSharedPreferences("servpn_prefs", Context.MODE_PRIVATE)
-        val authBox = findViewById<LinearLayout>(R.id.authContainer)
+        val authBox = findViewById<ScrollView>(R.id.authScroll)
         val mainBox = findViewById<ScrollView>(R.id.mainContainer)
         val codeIn = findViewById<EditText>(R.id.codeInput)
 
