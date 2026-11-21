@@ -33,6 +33,16 @@ class MainActivity : AppCompatActivity() {
         val tvStatus = findViewById<TextView>(R.id.tvSubStatus)
         val web = findViewById<WebView>(R.id.cabinetWebView)
 
+        fun logoutToCode() {
+            prefs.edit().remove("tok").apply()
+            CookieManager.getInstance().removeAllCookies(null)
+            web.clearCache(true)
+            web.loadUrl("about:blank")
+            mainBox.visibility = View.GONE
+            authBox.visibility = View.VISIBLE
+            codeIn.setText("")
+        }
+
         if (!prefs.getBoolean("disc_ok", false)) {
             AlertDialog.Builder(this)
                 .setTitle("Защита соединения SERVPN")
@@ -48,6 +58,10 @@ class MainActivity : AppCompatActivity() {
         web.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(v: WebView?, r: WebResourceRequest?): Boolean {
                 val u = r?.url?.toString() ?: return false
+                if (u.contains("/logout") || u.contains("/login") || u == baseUrl || u == "$baseUrl/") {
+                    logoutToCode()
+                    return true
+                }
                 if (u.startsWith(baseUrl)) return false
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(u)))
                 return true
@@ -57,20 +71,19 @@ class MainActivity : AppCompatActivity() {
         fun openCab(tok: String) {
             authBox.visibility = View.GONE
             mainBox.visibility = View.VISIBLE
-            web.loadUrl("$baseUrl/cabinet")
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val req = Request.Builder().url("$baseUrl/api/mobile/profile").addHeader("Authorization", "Bearer $tok").build()
                     val j = JSONObject(client.newCall(req).execute().body?.string() ?: "{}")
                     if (j.optBoolean("ok")) {
                         currentSubUrl = j.optString("subscriptionUrl")
-                        withContext(Dispatchers.Main) { tvStatus.text = "${j.optString("username")} • ${j.optString("status")}" }
-                    } else {
+                        val cabUrl = j.optString("cabinetUrl", "$baseUrl/cabinet")
                         withContext(Dispatchers.Main) {
-                            prefs.edit().remove("tok").apply()
-                            mainBox.visibility = View.GONE
-                            authBox.visibility = View.VISIBLE
+                            tvStatus.text = "${j.optString("username")} • ${j.optString("status")}"
+                            web.loadUrl(cabUrl)
                         }
+                    } else {
+                        withContext(Dispatchers.Main) { logoutToCode() }
                     }
                 } catch (_: Exception) {}
             }
