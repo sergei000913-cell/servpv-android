@@ -10,7 +10,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = (System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1)
-        versionName = "1.0.0"
+        versionName = "1.0.${System.getenv("GITHUB_RUN_NUMBER") ?: "1"}"
     }
     signingConfigs {
         create("release") {
@@ -18,6 +18,8 @@ android {
             storePassword = "servpn2026"
             keyAlias = "servpn"
             keyPassword = "servpn2026"
+            enableV1Signing = true
+            enableV2Signing = true
         }
     }
     buildTypes {
