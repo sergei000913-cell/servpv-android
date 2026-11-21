@@ -14,8 +14,16 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Generate Release Keystore
-        run: keytool -genkeypair -v -keystore app/servpn.jks -keyalg RSA -keysize 2048 -validity 10000 -alias servpn -storepass servpn2026 -keypass servpn2026 -dname "CN=SERVPN, O=SERVPN, C=RU"
+      - name: Ensure Static Release Keystore
+        run: |
+          if [ ! -f app/servpn.jks ]; then
+            keytool -genkeypair -v -keystore app/servpn.jks -keyalg RSA -keysize 2048 -validity 10000 -alias servpn -storepass servpn2026 -keypass servpn2026 -dname "CN=SERVPN, O=SERVPN, C=RU"
+            git config user.name "github-actions"
+            git config user.email "actions@github.com"
+            git add -f app/servpn.jks
+            git commit -m "Save static release keystore [skip ci]"
+            git push
+          fi
       - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.7'
