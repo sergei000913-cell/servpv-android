@@ -1,5 +1,10 @@
 name: Build SERVPN Android APK & AAB
-on: [push, workflow_dispatch]
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,3 +28,16 @@ jobs:
             app/build/outputs/apk/release/*.apk
             app/build/outputs/bundle/release/*.aab
             app/servpn.jks
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: SERVPN v1.0.${{ github.run_number }}
+          files: |
+            app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/bundle/release/app-release.aab
+      - name: Auto-deploy APK to VPS
+        if: ${{ secrets.VPS_PASS != '' }}
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
+          sshpass -p "${{ secrets.VPS_PASS }}" scp -o StrictHostKeyChecking=no app/build/outputs/apk/release/app-release.apk root@201.58.139.133:/opt/servpn-bot/servpn.apk
