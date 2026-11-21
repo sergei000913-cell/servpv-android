@@ -9,10 +9,12 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+      - name: Generate Release Keystore
+        run: keytool -genkeypair -v -keystore app/servpn.jks -keyalg RSA -keysize 2048 -validity 10000 -alias servpn -storepass servpn2026 -keypass servpn2026 -dname "CN=SERVPN, O=SERVPN, C=RU"
       - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.7'
-      - name: Build APK & AAB
+      - name: Build Signed APK & AAB
         run: gradle assembleRelease bundleRelease
       - uses: actions/upload-artifact@v4
         with:
@@ -20,3 +22,4 @@ jobs:
           path: |
             app/build/outputs/apk/release/*.apk
             app/build/outputs/bundle/release/*.aab
+            app/servpn.jks
