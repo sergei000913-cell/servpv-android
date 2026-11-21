@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity() {
             authBox.visibility = View.VISIBLE
             codeIn.setText("")
         }
-
         if (!prefs.getBoolean("disc_ok", false)) {
             AlertDialog.Builder(this)
                 .setTitle("Защита соединения SERVPN")
