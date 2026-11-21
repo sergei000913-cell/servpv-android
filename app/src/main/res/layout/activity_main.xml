@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://android.com"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0B1220"
+    android:orientation="vertical">
+    <LinearLayout
+        android:id="@+id/authContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SERVPN"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:text="Введите 6-значный код из Telegram-бота\n(@servps56_bot → команда /appcode)"
+            android:textColor="#94A3B8"
+            android:textSize="14sp" />
+        <EditText
+            android:id="@+id/codeInput"
+            android:layout_width="220dp"
+            android:layout_height="54dp"
+            android:layout_marginTop="24dp"
+            android:background="#1E293B"
+            android:gravity="center"
+            android:hint="000000"
+            android:inputType="number"
+            android:maxLength="6"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#64748B"
+            android:textSize="22sp" />
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="220dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="16dp"
+            android:text="Войти в кабинет" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/mainContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#111827"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
+            <TextView
+                android:id="@+id/tvSubStatus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Подписка: загрузка..."
+                android:textColor="#E2E8F0"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+            <Button
+                android:id="@+id/btnImportSub"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Подключить"
+                android:textSize="12sp" />
+        </LinearLayout>
+        <WebView
+            android:id="@+id/cabinetWebView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+</LinearLayout>
