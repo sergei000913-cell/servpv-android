@@ -9,7 +9,7 @@ android {
         applicationId = "xyz.serega16051990.servpn"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
+        versionCode = (System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1)
         versionName = "1.0.0"
     }
     signingConfigs {

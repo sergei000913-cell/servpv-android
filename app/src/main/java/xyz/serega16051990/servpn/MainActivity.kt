@@ -89,6 +89,23 @@ class MainActivity : AppCompatActivity() {
         }
 
         prefs.getString("tok", null)?.let { if (it.isNotEmpty()) openCab(it) }
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val j = JSONObject(client.newCall(Request.Builder().url("$baseUrl/api/mobile/version").build()).execute().body?.string() ?: "{}")
+                val curVer = packageManager.getPackageInfo(packageName, 0).longVersionCode.toInt()
+                if (j.optBoolean("ok") && j.optInt("versionCode", 1) > curVer) {
+                    val apkUrl = j.optString("apkUrl", "$baseUrl/app.apk")
+                    withContext(Dispatchers.Main) {
+                        AlertDialog.Builder(this@MainActivity)
+                            .setTitle("Доступно обновление SERVPN")
+                            .setMessage("Вышла новая версия приложения. Нажмите «Обновить» для загрузки и установки.")
+                            .setPositiveButton("Обновить") { _, _ -> startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(apkUrl))) }
+                            .setNegativeButton("Позже", null)
+                            .show()
+                    }
+                }
+            } catch (_: Exception) {}
+        }
 
         btnLogin.setOnClickListener {
             val c = codeIn.text.toString().trim()
