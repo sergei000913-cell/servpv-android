@@ -36,9 +36,3 @@ jobs:
           files: |
             app/build/outputs/apk/release/app-release.apk
             app/build/outputs/bundle/release/app-release.aab
-      - name: Auto-deploy APK to VPS
-        env:
-          PASS: $PASS
-        run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
-          sshpass -p "$PASS" scp -o StrictHostKeyChecking=no app/build/outputs/apk/release/app-release.apk root@201.58.139.133:/opt/servpn-bot/servpn.apk
