@@ -31,6 +31,10 @@ class MainActivity : AppCompatActivity() {
         val authBox = findViewById<ScrollView>(R.id.authScroll)
         val mainBox = findViewById<ScrollView>(R.id.mainContainer)
         val codeIn = findViewById<EditText>(R.id.codeInput)
+        val pInfo = packageManager.getPackageInfo(packageName, 0)
+        val verText = "SERVPS • Релиз v${pInfo.versionName} (сборка #${pInfo.longVersionCode})"
+        findViewById<TextView>(R.id.tvAuthVersion).text = verText
+        findViewById<TextView>(R.id.tvMainVersion).text = verText
 
         if (!prefs.getBoolean("disc_ok", false)) {
             AlertDialog.Builder(this)
@@ -115,7 +119,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         fun openCab(tok: String) {
-            (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(codeIn.windowToken, 0)
+            codeIn.clearFocus()
+            (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(window.decorView.windowToken, 0)
             authBox.visibility = View.GONE
             mainBox.visibility = View.VISIBLE
             CoroutineScope(Dispatchers.IO).launch {

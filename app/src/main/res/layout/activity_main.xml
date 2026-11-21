@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:fitsSystemWindows="true" xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#09090B">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:fitsSystemWindows="true" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#09090B">
 
     <ScrollView android:id="@+id/authScroll" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
-    <LinearLayout android:id="@+id/authContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:orientation="vertical" android:padding="24dp">
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🔑 SERVPS" android:textColor="#FACC15" android:textSize="32sp" android:textStyle="bold" />
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:gravity="center" android:text="Введите 6-значный код из бота" android:textColor="#A1A1AA" android:textSize="14sp" />
-        <EditText android:id="@+id/codeInput" android:layout_width="220dp" android:layout_height="54dp" android:layout_marginTop="24dp" android:background="#18181B" android:gravity="center" android:hint="000000" android:inputType="number" android:maxLength="6" android:textColor="#FACC15" android:textColorHint="#52525B" android:textSize="22sp" />
-        <Button android:id="@+id/btnLogin" android:layout_width="220dp" android:layout_height="52dp" android:layout_marginTop="16dp" android:backgroundTint="#F59E0B" android:textColor="#09090B" android:textStyle="bold" android:text="Войти в кабинет" />
-    </LinearLayout>
+        <LinearLayout android:id="@+id/authContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:orientation="vertical" android:padding="24dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🔑 SERVPS" android:textColor="#FACC15" android:textSize="32sp" android:textStyle="bold" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:gravity="center" android:text="Введите 6-значный код из бота" android:textColor="#A1A1AA" android:textSize="14sp" />
+            <EditText android:id="@+id/codeInput" android:layout_width="220dp" android:layout_height="54dp" android:layout_marginTop="24dp" android:background="#18181B" android:gravity="center" android:hint="000000" android:imeOptions="actionDone" android:inputType="number" android:maxLength="6" android:textColor="#FACC15" android:textColorHint="#52525B" android:textSize="22sp" />
+            <Button android:id="@+id/btnLogin" android:layout_width="220dp" android:layout_height="52dp" android:layout_marginTop="16dp" android:backgroundTint="#F59E0B" android:textColor="#09090B" android:textStyle="bold" android:text="Войти в кабинет" />
+            <TextView android:id="@+id/tvAuthVersion" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="28dp" android:text="Версия релиза: 1.0" android:textColor="#52525B" android:textSize="12sp" />
+        </LinearLayout>
     </ScrollView>
 
     <ScrollView android:id="@+id/mainContainer" android:layout_width="match_parent" android:layout_height="match_parent" android:visibility="gone">
@@ -25,8 +26,8 @@
                 <TextView android:id="@+id/tvTraffic" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Трафик и устройства: —" android:textColor="#A1A1AA" android:textSize="13sp" />
                 <TextView android:id="@+id/tvBalance" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="Баланс: 0 ₽" android:textColor="#FDE047" android:textSize="22sp" android:textStyle="bold" />
                 <LinearLayout android:id="@+id/tariffsBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="vertical" />
-                <Button android:id="@+id/btnFullWeb" android:layout_width="match_parent" android:layout_height="44dp" android:layout_marginTop="8dp" android:backgroundTint="#27272A" android:textColor="#FACC15" android:text="🌐 Открыть полный веб-кабинет (QR и роутеры)" />
-                <Button android:id="@+id/btnTopup" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="12dp" android:backgroundTint="#F59E0B" android:textColor="#09090B" android:textStyle="bold" android:text="💳 Пополнить / Продлить подписку" />
+                <Button android:id="@+id/btnTopup" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="10dp" android:backgroundTint="#F59E0B" android:textColor="#09090B" android:textStyle="bold" android:text="💳 Пополнить / Продлить подписку" />
+                <Button android:id="@+id/btnFullWeb" android:layout_width="match_parent" android:layout_height="44dp" android:layout_marginTop="8dp" android:backgroundTint="#27272A" android:textColor="#FACC15" android:text="🌐 Веб-кабинет (QR и роутеры)" />
             </LinearLayout>
 
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:background="#141417" android:orientation="vertical" android:padding="16dp">
@@ -46,6 +47,8 @@
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Активные устройства" android:textColor="#FACC15" android:textSize="16sp" android:textStyle="bold" />
                 <TextView android:id="@+id/tvDevicesList" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Нет привязанных устройств" android:textColor="#D4D4D8" android:textSize="13sp" />
             </LinearLayout>
+
+            <TextView android:id="@+id/tvMainVersion" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:layout_marginBottom="24dp" android:gravity="center" android:text="SERVPS • Версия релиза: 1.0" android:textColor="#52525B" android:textSize="12sp" />
 
         </LinearLayout>
     </ScrollView>
