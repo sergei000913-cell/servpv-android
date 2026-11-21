@@ -3,6 +3,7 @@ package xyz.serega16051990.servpn
 import android.content.*
 import android.net.Uri
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
 import androidx.core.view.WindowCompat
 import android.view.View
 import android.widget.*
@@ -72,6 +73,28 @@ class MainActivity : AppCompatActivity() {
                         findViewById<TextView>(R.id.tvExpire).text = "Действует до: ${u.optString("expireAt", "—")}"
                         findViewById<TextView>(R.id.tvTraffic).text = "Трафик: ${u.optDouble("used_gb", 0.0)} ГБ • Лимит устр.: ${u.optInt("deviceLimit", 0)}"
                         findViewById<TextView>(R.id.tvBalance).text = "Баланс: ${u.optInt("balance", 0)} ₽"
+                        val tBox = findViewById<LinearLayout>(R.id.tariffsBox)
+                        tBox.removeAllViews()
+                        val tArr = u.optJSONArray("tariffs")
+                        if (tArr != null) {
+                            for (i in 0 until tArr.length()) {
+                                val t = tArr.getJSONObject(i)
+                                val tid = t.optInt("id", i + 1)
+                                val btn = Button(this@MainActivity).apply {
+                                    text = "⚡ Продлить с баланса: ${t.optString("name")} — ${t.optInt("price")} ₽"
+                                    setBackgroundColor(0xFF27272A.toInt())
+                                    setTextColor(0xFFFACC15.toInt())
+                                    setOnClickListener {
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            val b = JSONObject().put("u", uid).put("s", sig).put("action", "buy_tariff").put("tariff_id", tid).toString().toRequestBody("application/json".toMediaType())
+                                            val r = JSONObject(client.newCall(Request.Builder().url("$baseUrl/api/user/action").post(b).build()).execute().body?.string() ?: "{}")
+                                            withContext(Dispatchers.Main) { toast(r.optString("msg", "Готово")); loadUserData() }
+                                        }
+                                    }
+                                }
+                                tBox.addView(btn)
+                            }
+                        }
                         findViewById<TextView>(R.id.tvDevicesList).text = devLines.toString().trim()
                     }
                 } catch (_: Exception) {}
@@ -92,6 +115,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         fun openCab(tok: String) {
+            (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(codeIn.windowToken, 0)
             authBox.visibility = View.GONE
             mainBox.visibility = View.VISIBLE
             CoroutineScope(Dispatchers.IO).launch {
@@ -128,6 +152,7 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btnRefresh).setOnClickListener { loadUserData(); toast("Обновлено") }
         findViewById<Button>(R.id.btnLogout).setOnClickListener { logout() }
+        findViewById<Button>(R.id.btnFullWeb).setOnClickListener { if (uid.isNotEmpty()) startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$baseUrl/cabinet?u=$uid&s=$sig"))) }
         findViewById<Button>(R.id.btnTopup).setOnClickListener {
             if (uid.isNotEmpty()) startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$baseUrl/web-pay?u=$uid&s=$sig")))
         }
