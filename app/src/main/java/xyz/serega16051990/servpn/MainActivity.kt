@@ -3,6 +3,7 @@ package xyz.serega16051990.servpn
 import android.content.*
 import android.net.Uri
 import android.os.Bundle
+import androidx.core.view.WindowCompat
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.*
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, true)
         setContentView(R.layout.activity_main)
         val prefs = getSharedPreferences("servpn_prefs", Context.MODE_PRIVATE)
         val authBox = findViewById<ScrollView>(R.id.authScroll)

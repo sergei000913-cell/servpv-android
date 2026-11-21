@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#09090B">
+<FrameLayout android:fitsSystemWindows="true" xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#09090B">
 
     <ScrollView android:id="@+id/authScroll" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
     <LinearLayout android:id="@+id/authContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:orientation="vertical" android:padding="24dp">
