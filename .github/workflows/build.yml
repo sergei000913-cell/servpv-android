@@ -30,7 +30,10 @@ jobs:
       - name: Download Xray Core AAR
         run: |
           mkdir -p app/libs
-          curl -L -o app/libs/libv2ray.aar https://github.com
+          URL=$(curl -s https://github.com | grep browser_download_url | grep '\.aar"' | head -n 1 | cut -d '"' -f 4)
+          echo "Downloading: $URL"
+          curl -fL -o app/libs/libv2ray.aar "$URL"
+          ls -lh app/libs/libv2ray.aar
       - name: Build Signed APK & AAB
         run: gradle assembleRelease bundleRelease
       - uses: actions/upload-artifact@v4
