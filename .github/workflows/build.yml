@@ -37,8 +37,9 @@ jobs:
           cd xraylite
           go install golang.org/x/mobile/cmd/gomobile@latest
           export PATH="$PATH:$(go env GOPATH)/bin"
+          export ANDROID_NDK_HOME=$(ls -d $ANDROID_HOME/ndk/* | tail -n 1)
           gomobile init
-          gomobile bind -v -androidapi 21 -ldflags='-s -w' -o "$GITHUB_WORKSPACE/app/libs/libv2ray.aar" .
+          gomobile bind -v -androidapi 21 -trimpath -ldflags='-s -w' -o "$GITHUB_WORKSPACE/app/libs/libv2ray.aar" .
       - name: Build Signed APK & AAB
         run: gradle assembleRelease bundleRelease
       - uses: actions/upload-artifact@v4
