@@ -27,6 +27,15 @@ jobs:
       - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.7'
+      - name: Build Official Xray Core AAR
+        run: |
+          mkdir -p app/libs
+          git clone --depth 1 https://github.com /tmp/xraylite
+          cd /tmp/xraylite
+          go install golang.org/x/mobile/cmd/gomobile@latest
+          export PATH="$PATH:$(go env GOPATH)/bin"
+          gomobile init
+          gomobile bind -v -androidapi 21 -ldflags='-s -w' -o "$GITHUB_WORKSPACE/app/libs/libv2ray.aar" .
       - name: Build Signed APK & AAB
         run: gradle assembleRelease bundleRelease
       - uses: actions/upload-artifact@v4
