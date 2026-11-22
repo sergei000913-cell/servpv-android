@@ -50,6 +50,8 @@ class MainActivity : AppCompatActivity() {
             (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(window.decorView.windowToken, 0)
             authScroll.visibility = View.GONE; mainBox.visibility = View.VISIBLE; loadProfile(tok)
         }
+        val deepTok = intent?.data?.getQueryParameter("token") ?: ""
+        if (deepTok.isNotEmpty()) { prefs.edit().putString("token", deepTok).apply(); openCab(deepTok) }
         val savedTok = prefs.getString("token", "") ?: ""
         if (savedTok.isNotEmpty()) openCab(savedTok)
 
@@ -66,6 +68,15 @@ class MainActivity : AppCompatActivity() {
                     }
                 } catch (_: Exception) { withContext(Dispatchers.Main) { toast("Ошибка сети") } }
             }
+        }
+        findViewById<Button>(R.id.btnAuthTg).setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$baseUrl/login?app=1")))
+        }
+        findViewById<Button>(R.id.btnAuthGoogle).setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$baseUrl/auth/google?app=1")))
+        }
+        findViewById<Button>(R.id.btnAuthYandex).setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$baseUrl/auth/yandex?app=1")))
         }
         findViewById<Button>(R.id.btnLogout).setOnClickListener { prefs.edit().remove("token").apply(); mainBox.visibility = View.GONE; authScroll.visibility = View.VISIBLE }
         findViewById<Button>(R.id.btnRefresh).setOnClickListener { loadUserData(); toast("Обновлено") }
