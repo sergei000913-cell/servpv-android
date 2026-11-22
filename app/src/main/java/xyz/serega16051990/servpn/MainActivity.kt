@@ -1,3 +1,4 @@
+package xyz.serega16051990.servpn
 val btnNode = findViewById<Button>(R.id.btnSelectNode)
         btnNode.setOnClickListener {
             if (nodeList.isEmpty()) { toast("Список серверов загружается..."); return@setOnClickListener }
@@ -61,7 +62,7 @@ val btnNode = findViewById<Button>(R.id.btnSelectNode)
                         if (prep != null) vpnPermLauncher.launch(prep)
                         else {
                             startService(Intent(this@MainActivity, ServpnVpnService::class.java).apply {
-                                action = ServpnVpnService::class.java.let { ServpnVpnService.ACTION_START }
+                                action = ServpnVpnService.ACTION_START
                                 putExtra("config", pendingCfg)
                                 putExtra("node", pendingNode)
                             })
