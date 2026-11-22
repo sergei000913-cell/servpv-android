@@ -32,6 +32,7 @@
 
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:background="#141417" android:orientation="vertical" android:padding="16dp">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Подключение и ключ" android:textColor="#FACC15" android:textSize="16sp" android:textStyle="bold" />
+                <Button android:id="@+id/btnSelectNode" android:layout_width="match_parent" android:layout_height="46dp" android:layout_marginTop="10dp" android:backgroundTint="#27272A" android:textColor="#F4F4F5" android:text="🌍 Сервер: Авто (лучший)" />
                 <Button android:id="@+id/btnConnect" android:layout_width="match_parent" android:layout_height="52dp" android:layout_marginTop="12dp" android:backgroundTint="#F59E0B" android:textColor="#09090B" android:textStyle="bold" android:text="🔑 Подключить в 1 клик" />
                 <Button android:id="@+id/btnCopyKey" android:layout_width="match_parent" android:layout_height="46dp" android:layout_marginTop="8dp" android:backgroundTint="#27272A" android:textColor="#FACC15" android:text="📋 Скопировать ссылку подписки" />
             </LinearLayout>

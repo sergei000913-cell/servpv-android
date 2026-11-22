@@ -1,4 +1,83 @@
-package xyz.serega16051990.servpn
+val btnNode = findViewById<Button>(R.id.btnSelectNode)
+        btnNode.setOnClickListener {
+            if (nodeList.isEmpty()) { toast("Список серверов загружается..."); return@setOnClickListener }
+            val names = nodeList.map { it.first }.toTypedArray()
+            AlertDialog.Builder(this)
+                .setTitle("Выберите страну / сервер")
+                .setItems(names) { _, which ->
+                    selectedNodeIdx = which
+                    btnNode.text = "🌍 Сервер: ${nodeList[which].first}"
+                }.show()
+        }
+
+        val btnConn = findViewById<Button>(R.id.btnConnect)
+        if (ServpnVpnService.isRunning) {
+            btnConn.text = "🟢 Отключить VPN (${ServpnVpnService.activeNodeName})"
+            btnConn.setBackgroundColor(0xFF16A34A.toInt())
+        }
+        btnConn.setOnClickListener {
+            if (ServpnVpnService.isRunning) {
+                startService(Intent(this, ServpnVpnService::class.java).apply { action = ServpnVpnService.ACTION_STOP })
+                btnConn.text = "🔑 Подключить в 1 клик"
+                btnConn.setBackgroundColor(0xFFF59E0B.toInt())
+                toast("VPN отключён")
+                return@setOnClickListener
+            }
+            if (nodeList.isNotEmpty()) {
+                val chosen = nodeList[selectedNodeIdx]
+                pendingNode = chosen.first
+                pendingCfg = VlessParser.buildXrayJson(chosen.second)
+                val prep = VpnService.prepare(this)
+                if (prep != null) {
+                    vpnPermLauncher.launch(prep)
+                } else {
+                    startService(Intent(this, ServpnVpnService::class.java).apply {
+                        action = ServpnVpnService.ACTION_START
+                        putExtra("config", pendingCfg)
+                        putExtra("node", pendingNode)
+                    })
+                    btnConn.text = "🟢 Отключить VPN ($pendingNode)"
+                    btnConn.setBackgroundColor(0xFF16A34A.toInt())
+                    toast("VPN подключён: $pendingNode")
+                }
+                return@setOnClickListener
+            }
+            if (subUrl.isEmpty()) { toast("Подписка не активна"); return@setOnClickListener }
+            btnConn.text = "⏳ Загрузка узлов..."
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val req = Request.Builder().url(subUrl).header("User-Agent", "v2rayNG/1.8.5").build()
+                    val body = client.newCall(req).execute().body?.string() ?: ""
+                    val parsed = VlessParser.extractFirstVless(body)
+                    withContext(Dispatchers.Main) {
+                        if (parsed == null) {
+                            btnConn.text = "🔑 Подключить в 1 клик"
+                            toast("Не найдены VLESS-узлы")
+                            return@withContext
+                        }
+                        pendingNode = parsed.first
+                        pendingCfg = parsed.second
+                        val prep = VpnService.prepare(this@MainActivity)
+                        if (prep != null) vpnPermLauncher.launch(prep)
+                        else {
+                            startService(Intent(this@MainActivity, ServpnVpnService::class.java).apply {
+                                action = ServpnVpnService::class.java.let { ServpnVpnService.ACTION_START }
+                                putExtra("config", pendingCfg)
+                                putExtra("node", pendingNode)
+                            })
+                            btnConn.text = "🟢 Отключить VPN ($pendingNode)"
+                            btnConn.setBackgroundColor(0xFF16A34A.toInt())
+                        }
+                    }
+                } catch (_: Exception) {
+                    withContext(Dispatchers.Main) {
+                        btnConn.text = "🔑 Подключить в 1 клик"
+                        toast("Ошибка загрузки узлов")
+                    }
+                }
+            }
+        }
+        package xyz.serega16051990.servpn
 
 import android.content.*
 import android.net.Uri
@@ -26,6 +105,8 @@ class MainActivity : AppCompatActivity() {
     private var isPaused = false
     private var pendingCfg = ""
     private var pendingNode = ""
+    private val nodeList = mutableListOf<Pair<String, String>>()
+    private var selectedNodeIdx = 0
 
     private val vpnPermLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
         if (res.resultCode == RESULT_OK && pendingCfg.isNotEmpty()) {
@@ -78,6 +159,29 @@ class MainActivity : AppCompatActivity() {
                     val u = JSONObject(client.newCall(Request.Builder().url("$baseUrl/api/user?u=$uid&s=$sig").build()).execute().body?.string() ?: "{}")
                     if (!u.optBoolean("ok")) return@launch
                     subUrl = u.optString("subUrl")
+                        nodeList.clear()
+                        val vk = u.optString("vlessKey")
+                        if (vk.startsWith("vless://")) {
+                            val nm = if ("#" in vk) java.net.URLDecoder.decode(vk.substringAfter("#"), "UTF-8") else "Авто (основной)"
+                            nodeList.add(Pair(nm, vk))
+                        }
+                        val rk = u.optJSONArray("routerKeys")
+                        if (rk != null) {
+                            for (i in 0 until rk.length()) {
+                                val item = rk.opt(i)
+                                val uriStr = if (item is org.json.JSONObject) (item.optString("url").ifEmpty { item.optString("key") }) else item?.toString() ?: ""
+                                if (uriStr.startsWith("vless://")) {
+                                    val nm = if (item is org.json.JSONObject && item.optString("name").isNotEmpty()) item.optString("name")
+                                             else if ("#" in uriStr) java.net.URLDecoder.decode(uriStr.substringAfter("#"), "UTF-8")
+                                             else "Сервер #${i + 1}"
+                                    if (nodeList.none { it.second == uriStr }) nodeList.add(Pair(nm, uriStr))
+                                }
+                            }
+                        }
+                        if (nodeList.isNotEmpty()) {
+                            if (selectedNodeIdx >= nodeList.size) selectedNodeIdx = 0
+                            findViewById<Button>(R.id.btnSelectNode).text = "🌍 Сервер: ${nodeList[selectedNodeIdx].first}"
+                        }
                     val st = u.optString("status", "NONE")
                     isPaused = (st == "PAUSED")
                     val devs = u.optJSONArray("devices")
