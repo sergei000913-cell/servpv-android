@@ -2,6 +2,8 @@ package xyz.serega16051990.servpn
 
 import android.content.*
 import android.net.Uri
+import android.net.VpnService
+import androidx.activity.result.contract.ActivityResultContracts
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.WindowCompat
@@ -22,6 +24,21 @@ class MainActivity : AppCompatActivity() {
     private var sig = ""
     private var subUrl = ""
     private var isPaused = false
+    private var pendingCfg = ""
+    private var pendingNode = ""
+
+    private val vpnPermLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
+        if (res.resultCode == RESULT_OK && pendingCfg.isNotEmpty()) {
+            startService(Intent(this, ServpnVpnService::class.java).apply {
+                action = ServpnVpnService.ACTION_START
+                putExtra("config", pendingCfg)
+                putExtra("node", pendingNode)
+            })
+            findViewById<Button>(R.id.btnConnect).text = "🟢 Отключить VPN ($pendingNode)"
+            findViewById<Button>(R.id.btnConnect).setBackgroundColor(0xFF16A34A.toInt())
+            Toast.makeText(this, "VPN подключён: $pendingNode", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -166,11 +183,54 @@ class MainActivity : AppCompatActivity() {
             (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText("SERVPN", subUrl))
             toast("Ссылка подписки скопирована!")
         }
-        findViewById<Button>(R.id.btnConnect).setOnClickListener {
+        val btnConn = findViewById<Button>(R.id.btnConnect)
+        if (ServpnVpnService.isRunning) {
+            btnConn.text = "🟢 Отключить VPN (${ServpnVpnService.activeNodeName})"
+            btnConn.setBackgroundColor(0xFF16A34A.toInt())
+        }
+        btnConn.setOnClickListener {
+            if (ServpnVpnService.isRunning) {
+                startService(Intent(this, ServpnVpnService::class.java).apply { action = ServpnVpnService.ACTION_STOP })
+                btnConn.text = "🔑 Подключить в 1 клик"
+                btnConn.setBackgroundColor(0xFFF59E0B.toInt())
+                toast("VPN отключён")
+                return@setOnClickListener
+            }
             if (subUrl.isEmpty()) { toast("Подписка не активна"); return@setOnClickListener }
-            (getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText("SERVPN", subUrl))
-            try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("v2rayng://install-sub?url=${Uri.encode(subUrl)}&name=SERVPN"))) }
-            catch (_: Exception) { toast("Ссылка скопирована — вставьте её в v2rayNG или Happ") }
+            btnConn.text = "⏳ Подключение..."
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val body = client.newCall(Request.Builder().url(subUrl).build()).execute().body?.string() ?: ""
+                    val parsed = VlessParser.extractFirstVless(body)
+                    withContext(Dispatchers.Main) {
+                        if (parsed == null) {
+                            btnConn.text = "🔑 Подключить в 1 клик"
+                            toast("Не найдены VLESS-узлы в подписке")
+                            return@withContext
+                        }
+                        pendingNode = parsed.first
+                        pendingCfg = parsed.second
+                        val prep = VpnService.prepare(this@MainActivity)
+                        if (prep != null) {
+                            vpnPermLauncher.launch(prep)
+                        } else {
+                            startService(Intent(this@MainActivity, ServpnVpnService::class.java).apply {
+                                action = ServpnVpnService.ACTION_START
+                                putExtra("config", pendingCfg)
+                                putExtra("node", pendingNode)
+                            })
+                            btnConn.text = "🟢 Отключить VPN ($pendingNode)"
+                            btnConn.setBackgroundColor(0xFF16A34A.toInt())
+                            toast("VPN подключён: $pendingNode")
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        btnConn.text = "🔑 Подключить в 1 клик"
+                        toast("Ошибка сети при загрузке узлов")
+                    }
+                }
+            }
         }
         findViewById<Button>(R.id.btnPause).setOnClickListener { sendAction(if (isPaused) "unpause" else "pause") }
         findViewById<Button>(R.id.btnRevoke).setOnClickListener { sendAction("revoke") }
