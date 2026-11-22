@@ -75,9 +75,6 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnAuthGoogle).setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$baseUrl/auth/google?app=1")))
         }
-        findViewById<Button>(R.id.btnAuthYandex).setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$baseUrl/auth/yandex?app=1")))
-        }
         findViewById<Button>(R.id.btnLogout).setOnClickListener { prefs.edit().remove("token").apply(); mainBox.visibility = View.GONE; authScroll.visibility = View.VISIBLE }
         findViewById<Button>(R.id.btnRefresh).setOnClickListener { loadUserData(); toast("Обновлено") }
         findViewById<Button>(R.id.btnTopup).setOnClickListener { if (uid.isNotEmpty()) startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$baseUrl/web-pay?u=$uid&s=$sig"))) }

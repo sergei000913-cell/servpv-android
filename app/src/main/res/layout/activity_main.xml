@@ -9,7 +9,6 @@
             <Button android:id="@+id/btnLogin" android:layout_width="220dp" android:layout_height="52dp" android:layout_marginTop="16dp" android:backgroundTint="#F59E0B" android:textColor="#09090B" android:textStyle="bold" android:text="Войти в кабинет" />
             <Button android:id="@+id/btnAuthTg" android:layout_width="220dp" android:layout_height="44dp" android:layout_marginTop="14dp" android:backgroundTint="#1E293B" android:textColor="#38BDF8" android:text="✈️ Войти через Telegram" />
             <Button android:id="@+id/btnAuthGoogle" android:layout_width="220dp" android:layout_height="44dp" android:layout_marginTop="8dp" android:backgroundTint="#18181B" android:textColor="#F4F4F5" android:text="🔵 Войти через Google" />
-            <Button android:id="@+id/btnAuthYandex" android:layout_width="220dp" android:layout_height="44dp" android:layout_marginTop="8dp" android:backgroundTint="#18181B" android:textColor="#F87171" android:text="🔴 Войти через Яндекс ID" />
             <TextView android:id="@+id/tvAuthVersion" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="28dp" android:text="Версия релиза: 1.0" android:textColor="#52525B" android:textSize="12sp" />
         </LinearLayout>
     </ScrollView>
