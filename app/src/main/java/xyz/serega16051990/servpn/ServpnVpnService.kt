@@ -50,7 +50,7 @@ class ServpnVpnService : VpnService() {
                 override fun shutdown(): Long = 0
                 override fun onEmitStatus(p0: Long, p1: String?): Long = 0
             })
-            coreController?.startLoop(finalConfig)
+            coreController?.startLoop(finalConfig, tunFd)
             isRunning = true
         } catch (_: Exception) {
             stopVpn()
