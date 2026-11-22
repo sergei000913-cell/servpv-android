@@ -6,7 +6,7 @@ android {
     namespace = "xyz.serega16051990.servpn"
     compileSdk = 34
     defaultConfig {
-        applicationId = "xyz.serega16051990.servpn"
+        applicationId = "xyz.serega16051990.servps"
         minSdk = 24
         targetSdk = 34
         versionCode = (System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1)
