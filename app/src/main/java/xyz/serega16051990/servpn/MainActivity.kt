@@ -197,7 +197,6 @@ class MainActivity : AppCompatActivity() {
                 val res = JSONObject(client.newCall(Request.Builder().url("$baseUrl/api/mobile/version").build()).execute().body?.string() ?: "{}")
                 if (res.optLong("versionCode", 0) > verCode) withContext(Dispatchers.Main) {
                     AlertDialog.Builder(this@MainActivity).setTitle("Доступно обновление SERVPS").setMessage("Вышла новая версия. Установить сейчас?")
-cat << 'EOF' >> /opt/servpn-android/app/src/main/java/xyz/serega16051990/servpn/MainActivity.kt
                         .setPositiveButton("Обновить") { _, _ -> downloadAndInstall(res.getString("apkUrl")) }.setNegativeButton("Позже", null).show()
                 }
             } catch (_: Exception) {}
