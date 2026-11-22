@@ -27,11 +27,14 @@ jobs:
       - uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.7'
+      - uses: actions/checkout@v4
+        with:
+          repository: 2dust/AndroidLibXrayLite
+          path: xraylite
       - name: Build Official Xray Core AAR
         run: |
           mkdir -p app/libs
-          git clone --depth 1 https://github.com /tmp/xraylite
-          cd /tmp/xraylite
+          cd xraylite
           go install golang.org/x/mobile/cmd/gomobile@latest
           export PATH="$PATH:$(go env GOPATH)/bin"
           gomobile init
